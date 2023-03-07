@@ -1,6 +1,7 @@
 import socket
 import threading
 
+
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = 12345
 
@@ -13,30 +14,29 @@ try:
 except:
     print("\n\t ZLY ADRES AASDDAASDA\n")
 try:
-    s.send(uname.encode('UTF-8'))
+    s.send(uname.encode('ascii'))
 
 
-    running = True
+    clientRunning = True
 
     def receiveMsg(sock):
-        serverdead = False
-        while running and (not serverdead):
+        serverDown = False
+        while clientRunning and (not serverDown):
             try:
-                msg = sock.recv(1024).decode('UTF-8')
+                msg = sock.recv(1024).decode('ascii')
                 print(msg)
             except:
-                print('W SERWEJ JEBNEL PIERUN \n kliknij cos zeby zamknac kienta')
-                serverdead = True
+                print('W SERWEJ JEBNEL PIERUN \n kliknij cos zeby zamknac')
+                serverDown = True
 
     threading.Thread(target = receiveMsg, args = (s,)).start()
-    while running:
+    while clientRunning:
         tempMsg = input()
         msg = uname + ' >> ' + tempMsg
         if '/exit' in msg:
-            running = False
-            s.send('/exit'.encode('UTF-8'))
+            clientRunning = False
+            s.send('/exit'.encode('ascii'))
         else:
-            s.send(msg.encode('UTF-8'))
+            s.send(msg.encode('ascii'))
 
-except:
-    print("\n\t Kurwa nwm error te\n")
+except:print("\n\t ERROREK DADSA\n")

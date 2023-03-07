@@ -1,73 +1,64 @@
 import socket
 import threading
-import datetime
 
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverRunning = True
 ip = str(socket.gethostbyname(socket.gethostname()))
-port = 12345
-adress = '127.0.0.1'
 
 clients = {}
 
-s.bind((adress, port))
+s.bind(('127.0.0.1', 12345))
 s.listen()
 print('Starcik serwerka :)')
 print('IP: ' + ip)
 
 
+
+
 def handleClient(client, uname):
     clientConnected = True
     keys = clients.keys()
-    help = '/all - to do wszystich piszesz\n /komendy - to masz to menu \n /exit - wydupiasz z serwera\n /ludziki - daje ci liste ludzikow na serwerze \n /msg - to piszesz do kogos bezposrednio np. /msg debil \n'
+    help = ' /all - to do wszystkich piszesz\n /msg - to piszesz do 1 typa np. /msg murzyn \n /exit - wyjscie \n /ludziki - to lista ludzi na serwerze \n /info - to jest to menu'
 
     while clientConnected:
         try:
-            
-            msg = client.recv(1024).decode('UTF-8')
-            response = 'Ludziki na serwerku :\n'
+            msg = client.recv(1024).decode('ascii')
+            response = 'Ludziki na serwerze :\n'
             found = False
-            
             if '/ludziki' in msg:
-
                 clientNo = 0
-
                 for name in keys:
                     clientNo += 1
                     response = response + str(clientNo) +'\t:' + name+'\n'
-                client.send(response.encode('UTF-8'))
-
-            elif '/komendy' in msg:
-                client.send(help.encode('UTF-8'))
-
+                client.send(response.encode('ascii'))
+            elif '/info' in msg:
+                client.send(help.encode('ascii'))
             elif '/all' in msg:
                 msg = msg.replace('/all','')
                 for k,v in clients.items():
-                    v.send(msg.encode('UTF-8'))
-                
+                    v.send(msg.encode('ascii'))
             elif '/exit' in msg:
-                response = 'Cwel sie rozlaczyl'
-                client.send(response.encode('UTF-8'))
+                response = 'CLIENT DISCONNECTED'
+                client.send(response.encode('ascii'))
                 clients.pop(uname)
-                print(uname + ' LEFT')
+                 
+                print(uname + ' Wydupcyl z serwerka')
+
                 clientConnected = False
-
             else:
-
                 for name in keys:
                     if('/msg '+name) in msg:
-                        msg = msg.replace('@'+name, '')
-                        clients.get(name).send(msg.encode('UTF-8'))
+                        msg = msg.replace('/msg '+name, '')
+                        clients.get(name).send(msg.encode('ascii'))
                         found = True
-
                 if(not found):
-                    client.send('Zly nick debilu'.encode('UTF-8'))
-
+                    client.send('Zly targecik idiocie'.encode('ascii'))
         except:
             clients.pop(uname)
-            print(uname + ' LEFT')
+
+
             clientConnected = False
 
 
@@ -77,9 +68,10 @@ def handleClient(client, uname):
 while serverRunning:
     client, address = s.accept()
     uname = client.recv(1024).decode('ascii')
-    print('Polaczono z serwerkiem'%str(uname))
-    print('------------------------------------------------------------------------------------------------------')
-    client.send('Elo, tu masz komendy: /komendy'.encode('ascii'))
+
+
+
+    client.send('Polczono, tu masz komeny: /info'.encode('ascii'))
     
     if(client not in clients):
         clients[uname] = client
