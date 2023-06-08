@@ -11,8 +11,8 @@ clients = {}
 
 s.bind(('127.0.0.1', 12345))
 s.listen()
-print('Starcik serwerka :)')
-print('IP: ' + ip)
+print('Server started')
+print('SERVER IP: ' + ip)
 
 
 
@@ -20,14 +20,14 @@ print('IP: ' + ip)
 def handleClient(client, uname):
     clientConnected = True
     keys = clients.keys()
-    help = ' /all - to do wszystkich piszesz\n /msg - to piszesz do 1 typa np. /msg murzyn \n /exit - wyjscie \n /ludziki - to lista ludzi na serwerze \n /info - to jest to menu'
+    help = ' /all - message all users \n /msg - message a single user ex. /msg user1 \n /exit - exit the program \n /users - list of the current users \n /info - '
 
     while clientConnected:
         try:
             msg = client.recv(1024).decode('ascii')
-            response = 'Ludziki na serwerze :\n'
+            response = 'Current users :\n'
             found = False
-            if '/ludziki' in msg:
+            if '/users' in msg:
                 clientNo = 0
                 for name in keys:
                     clientNo += 1
@@ -44,7 +44,7 @@ def handleClient(client, uname):
                 client.send(response.encode('ascii'))
                 clients.pop(uname)
                  
-                print(uname + ' Wydupcyl z serwerka')
+                print(uname + ' Left the server')
 
                 clientConnected = False
             else:
@@ -54,7 +54,7 @@ def handleClient(client, uname):
                         clients.get(name).send(msg.encode('ascii'))
                         found = True
                 if(not found):
-                    client.send('Zly targecik idiocie'.encode('ascii'))
+                    client.send('User not found'.encode('ascii'))
         except:
             clients.pop(uname)
 
