@@ -7,12 +7,12 @@ port = 12345
 
 
 
-ip = input('Podaj adresik serwera: ')
-uname = input('Podaj nick: ')
+ip = input('Server address: ')
+uname = input('Set a nickname: ')
 try:
     s.connect((ip, port))
 except:
-    print("\n\t ZLY ADRES AASDDAASDA\n")
+    print("\n\t Wrong server address\n")
 try:
     s.send(uname.encode('ascii'))
 
@@ -26,7 +26,7 @@ try:
                 msg = sock.recv(1024).decode('ascii')
                 print(msg)
             except:
-                print('W SERWEJ JEBNEL PIERUN \n kliknij cos zeby zamknac')
+                print('connection closed, press a button to close')
                 serverDown = True
 
     threading.Thread(target = receiveMsg, args = (s,)).start()
@@ -39,4 +39,4 @@ try:
         else:
             s.send(msg.encode('ascii'))
 
-except:print("\n\t ERROREK DADSA\n")
+except:print("\n\t Error\n")
